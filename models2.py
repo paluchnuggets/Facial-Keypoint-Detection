@@ -17,27 +17,32 @@ class Net(nn.Module):
         ## it's suggested that you make this last layer output 136 values, 2 for each of the 68 keypoint (x, y) pairs
         
         # As an example, you've been given a convolutional layer, which you may (but don't have to) change:
-        # 1 input image channel (grayscale), 32 output channels/feature maps, 5x5 square convolution kernel
+        # 1 input image channel (grayscale), 32 output channels/feature maps, 5x5 square convolution kernel, no padding
         
-        
+        # floor((224-5)/1) + 1 = 220 --maxpooling(2,2)--> floor(110) = 110
         self.conv1 = nn.Conv2d(1, 32, 5) 
         #I.xavier_uniform_(self.conv1.weight)
         self.conv1_bn = nn.BatchNorm2d(32)
         
+        # floor((110-3)/1) + 1 = 108 --maxpooling(2,2)--> floor(54) = 54
         self.conv2 = nn.Conv2d(32, 64, 3)
         #I.xavier_uniform_(self.conv2.weight)
         self.conv2_bn = nn.BatchNorm2d(64)
         
+        # floor((54-3)/1) + 1 = 52 --maxpooling(2,2)--> floor(26) = 26
         self.conv3 = nn.Conv2d(64, 128, 3)
         #I.xavier_uniform_(self.conv3.weight)
         self.conv3_bn = nn.BatchNorm2d(128)
         
+        # floor((26-2)/1) + 1 = 25 --maxpooling(2,2)--> floor(12.5) = 12
         self.conv4 = nn.Conv2d(128, 256, 2)
         #I.xavier_uniform_(self.conv4.weight)
         self.conv4_bn = nn.BatchNorm2d(256)
         
         self.pool = nn.MaxPool2d(2, 2)
         
+        # Now we flatten the output from the last convolutional layer which is 256 feature maps, each of size 12 x 12
+        # when we flatten it into vector it becomes 12 * 12 * 256 = 36864 feature vector
         self.fc1 = nn.Linear(12*12*256, 2048)
         self.fc1_bn = nn.BatchNorm1d(2048)
         #I.xavier_uniform_(self.fc1.weight)
@@ -50,10 +55,6 @@ class Net(nn.Module):
         
         self.fc3 = nn.Linear(512, 136)
         #I.xavier_uniform_(self.fc2.weight)
-        
-        
-        ## Note that among the layers to add, consider including:
-        # maxpooling layers, multiple conv layers, fully-connected layers, and other layers (such as dropout or batch normalization) to avoid overfitting
         
 
         
